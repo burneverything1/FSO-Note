@@ -66,6 +66,22 @@ app.delete('/api/notes/:id', (request, response) => {
     response.status(204).end()
 })
 
+//update request for toggle importance of
+app.put('/api/notes/:id', (request, response) => {
+    const body = request.body
+
+    if (!body.content) {
+        return response.status(400).json({
+            error: 'content missing'
+        })
+    }
+
+    const note = notes.find(note => note.id === body.id)
+    note.important = body.important
+    
+    response.json(note)
+})
+
 const generateId = () => {
     //find the largest ID in current list
     const maxId = notes.length > 0  //ternary operator
