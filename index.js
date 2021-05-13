@@ -12,6 +12,9 @@ app.use(cors())
 const morgan = require('morgan')
 app.use(morgan('tiny'))
 
+//add static to display 'build' folder with react frontend
+app.use(express.static('build'))
+
 let notes = [
     {
         id: 1,
