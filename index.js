@@ -1,6 +1,7 @@
 require('dotenv').config()
 const express = require('express')
 const app = express()
+const Note = require('./models/note')
 
 //add json-parser for incoming POST requests
 app.use(express.json())
@@ -37,7 +38,7 @@ let notes = [
       }
 ]
 
-// MONGODB SECTION
+/* MONGODB SECTION
 
 const mongoose = require('mongoose')
 
@@ -59,6 +60,15 @@ const noteSchema = new mongoose.Schema({
 
 const Note = mongoose.model('Note', noteSchema)
 
+this section is to format what is returned my mongodb by modifying the 'toJSON'
+method of the schema
+noteSchema.set('toJSON', {
+    transform: (document, returnedObject) => {
+        returnedObject.id = returnedObject._id.toString()
+        delete returnedObject._id
+        delete returnedObject.__v
+    }
+})*/
 
 // ROUTE HANDLERS
 
@@ -70,16 +80,11 @@ app.get('/api/notes', (request,response) => {
 
 //REST interface for single notes
 app.get('/api/notes/:id', (request, response) => {
-    const id = Number(request.params.id)                //id parameter from URL
-    const note = notes.find(note => note.id === id)
-    
-    if (note) {
-        // if note exists, return note
-        response.json(note)
-    } else {
-        // not exists, return 404
-        response.status(404).end()
-    }
+    Note
+        .findById(request.params.id)        // the :id in URL
+        .then(note => {
+            response.json(note)
+        })
 })
 
 app.delete('/api/notes/:id', (request, response) => {
@@ -127,22 +132,24 @@ app.post('/api/notes', (request, response) => {
     */
     
     //check for content in request
-    if (!body.content) {
+    if (body.content === undefined) {
         return response.status(400).json({
             error: 'content missing'
         })
     }
 
-    const note = {
+    const note = new Note({
         content: body.content,
         important: body.important || false,     //if data in body has .important, evaluate. Else, default to false
         date: new Date(),
-        id: generateId(),
-    }
+    })
 
-    notes = notes.concat(note)
-
-    response.json(note)
+    note
+        .save()
+        // use a callback for .save() so that the response is only sent if operation succeeded
+        .then(savedNote => {                // the data sent back is formatted with the 'toJSON' method
+            response.json(savedNote)
+        })
 })
 
 /*
@@ -156,7 +163,7 @@ const unknownEndpoint = (request, response) => {
 
 app.use(unknownEndpoint)
 
-const PORT = process.env.PORT || 3001       //get port from heroku or use 3001
+const PORT = process.env.PORT       //get port from heroku or use 3001
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 })
