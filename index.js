@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express')
 const app = express()
 
@@ -36,12 +37,35 @@ let notes = [
       }
 ]
 
-app.get('/', (request, response) => {
-    response.send('<h1>Hello World!</h1>')
+// MONGODB SECTION
+
+const mongoose = require('mongoose')
+
+const url = 
+`mongodb+srv://timmyylee95:${process.env.mongoDB_pass}@cluster0.o1axb.mongodb.net/note-app?retryWrites=true&w=majority`
+
+mongoose.connect(url, { 
+    useNewUrlParser: true, 
+    useUnifiedTopology: true, 
+    useFindAndModify: false, 
+    useCreateIndex: true
 })
 
+const noteSchema = new mongoose.Schema({
+    content: String,
+    date: Date,
+    important: Boolean,
+})
+
+const Note = mongoose.model('Note', noteSchema)
+
+
+// ROUTE HANDLERS
+
 app.get('/api/notes', (request,response) => {
-    response.json(notes)
+    Note.find({}).then(notes => {
+        response.json(notes)
+    })
 })
 
 //REST interface for single notes
