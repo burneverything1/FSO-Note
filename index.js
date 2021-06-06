@@ -1,7 +1,7 @@
 require('dotenv').config()
 const express = require('express')
 const app = express()
-const Note = require('./models/note')
+const Note = require('./models/note')       // mongodb models
 
 //add json-parser for incoming POST requests
 app.use(express.json())
