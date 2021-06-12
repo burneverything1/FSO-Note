@@ -3,6 +3,9 @@ const express = require('express')
 const app = express()
 const Note = require('./models/note')       // mongodb models
 
+//add static to display 'build' folder with react frontend
+app.use(express.static('build'))
+
 //add json-parser for incoming POST requests
 app.use(express.json())
 
@@ -14,8 +17,6 @@ app.use(cors())
 const morgan = require('morgan')
 app.use(morgan('tiny'))
 
-//add static to display 'build' folder with react frontend
-app.use(express.static('build'))
 
 let notes = [
     {
@@ -79,36 +80,43 @@ app.get('/api/notes', (request,response) => {
 })
 
 //REST interface for single notes
-app.get('/api/notes/:id', (request, response) => {
+app.get('/api/notes/:id', (request, response, next) => {
     Note
         .findById(request.params.id)        // the :id in URL
         .then(note => {
-            response.json(note)
+            if(note) {
+                response.json(note)
+            } else {
+                response.status(404).end()
+            }
         })
+        .catch(error => next(error))
 })
 
-app.delete('/api/notes/:id', (request, response) => {
-    const id = Number(request.params.id)
-    notes = notes.filter(note => note.id !== id)
-    // recreate notes object without given note
-
-    response.status(204).end()
+app.delete('/api/notes/:id', (request, response, next) => {
+    Note
+        .findByIdAndRemove(request.params.id)
+        .then(result => {
+            response.status(204).end()
+        })
+        .catch(error => next(error))
 })
 
 //update request for toggle importance of
-app.put('/api/notes/:id', (request, response) => {
+app.put('/api/notes/:id', (request, response, next) => {
     const body = request.body
 
-    if (!body.content) {
-        return response.status(400).json({
-            error: 'content missing'
-        })
+    const note = {
+        content: body.content,
+        important: body.important,
     }
 
-    const note = notes.find(note => note.id === body.id)
-    note.important = body.important
-    
-    response.json(note)
+    Note
+        .findByIdAndUpdate(request.params.id, note, { new: true })
+        .then(updatedNote => {
+            response.json(updatedNote)
+        })
+        .catch(error => next(error))
 })
 
 const generateId = () => {
@@ -162,6 +170,19 @@ const unknownEndpoint = (request, response) => {
 }
 
 app.use(unknownEndpoint)
+
+// error handler middleware
+const errorHandler = (error, request, response, next) => {
+    console.error(error.message)
+
+    if (error.name === 'CastError') {
+        return response.status(400).send({ error: 'malformatted id' })
+    }
+
+    next(error)
+}
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT       //get port from heroku or use 3001
 app.listen(PORT, () => {
