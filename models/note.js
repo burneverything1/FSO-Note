@@ -16,9 +16,21 @@ mongoose.connect(url, {
     })
 
 const noteSchema = new mongoose.Schema({
-    content: String,
+    // use validation functionality in Mongoose
+    content: {
+        type: String,
+        minLength: 5,
+        required: true
+    },
+    date: {
+        type: Date,
+        required: true
+    },
+    important: Boolean
+
+    /*content: String,
     date: Date,
-    important: Boolean,
+    important: Boolean,*/
 })
 
 /* this section is to format what is returned my mongodb by modifying the 'toJSON'
