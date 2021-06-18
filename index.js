@@ -131,7 +131,7 @@ const generateId = () => {
     return maxId + 1
 }
 
-app.post('/api/notes', (request, response) => {
+app.post('/api/notes', (request, response, next) => {
     const body = request.body
     /*
     the json-parser takes the JSON data of a request, transforms it
@@ -139,12 +139,12 @@ app.post('/api/notes', (request, response) => {
     object before the route handler is called
     */
     
-    //check for content in request
+    /*check for content in request
     if (body.content === undefined) {
         return response.status(400).json({
             error: 'content missing'
         })
-    }
+    }*/
 
     const note = new Note({
         content: body.content,
@@ -156,8 +156,9 @@ app.post('/api/notes', (request, response) => {
         .save()
         // use a callback for .save() so that the response is only sent if operation succeeded
         .then(savedNote => {                // the data sent back is formatted with the 'toJSON' method
-            response.json(savedNote)
+            response.json(savedNote.toJSON())
         })
+        .catch(error => next(error))
 })
 
 /*
@@ -177,6 +178,8 @@ const errorHandler = (error, request, response, next) => {
 
     if (error.name === 'CastError') {
         return response.status(400).send({ error: 'malformatted id' })
+    } else if (error.name === 'ValidationError') {          // handle mongoose validation errors
+        return response.status(400).json({ error: error.message })
     }
 
     next(error)
