@@ -156,7 +156,10 @@ app.post('/api/notes', (request, response, next) => {
         .save()
         // use a callback for .save() so that the response is only sent if operation succeeded
         .then(savedNote => {                // the data sent back is formatted with the 'toJSON' method
-            response.json(savedNote.toJSON())
+            return savedNote.toJSON()
+        })
+        .then(savedAndFormattedNote => {
+            response.json(savedAndFormattedNote)
         })
         .catch(error => next(error))
 })
