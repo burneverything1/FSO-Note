@@ -22,19 +22,19 @@ let notes = [
     {
         id: 1,
         content: 'HTML is easy',
-        date: "2019-05-30T17:30:31.098Z",
+        date: '2019-05-30T17:30:31.098Z',
         important: true
       },
       {
         id: 2,
-        content: "Browser can execute only Javascript",
-        date: "2019-05-30T18:39:34.091Z",
+        content: 'Browser can execute only Javascript',
+        date: '2019-05-30T18:39:34.091Z',
         important: false
       },
       {
         id: 3,
-        content: "GET and POST are the most important methods of HTTP protocol",
-        date: "2019-05-30T19:20:14.298Z",
+        content: 'GET and POST are the most important methods of HTTP protocol',
+        date: '2019-05-30T19:20:14.298Z',
         important: true
       }
 ]
@@ -43,13 +43,13 @@ let notes = [
 
 const mongoose = require('mongoose')
 
-const url = 
+const url =
 `mongodb+srv://timmyylee95:${process.env.mongoDB_pass}@cluster0.o1axb.mongodb.net/note-app?retryWrites=true&w=majority`
 
-mongoose.connect(url, { 
-    useNewUrlParser: true, 
-    useUnifiedTopology: true, 
-    useFindAndModify: false, 
+mongoose.connect(url, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false,
     useCreateIndex: true
 })
 
@@ -138,7 +138,7 @@ app.post('/api/notes', (request, response, next) => {
     into a JS object and attaches it to the .body property of the request
     object before the route handler is called
     */
-    
+
     /*check for content in request
     if (body.content === undefined) {
         return response.status(400).json({
@@ -158,7 +158,7 @@ app.post('/api/notes', (request, response, next) => {
         .then(savedNote => {                // the data sent back is formatted with the 'toJSON' method
             return savedNote.toJSON()
         })
-        .then(savedAndFormattedNote => {
+        .then(savedAndFormattedNote => {    // promise chaining
             response.json(savedAndFormattedNote)
         })
         .catch(error => next(error))
@@ -170,7 +170,7 @@ Below is a middleware function to catch if no route handles the HTTP request
 */
 
 const unknownEndpoint = (request, response) => {
-    response.status(404).send({ error: 'unknown endpoint '})
+    response.status(404).send({ error: 'unknown endpoint ' })
 }
 
 app.use(unknownEndpoint)
@@ -192,5 +192,5 @@ app.use(errorHandler)
 
 const PORT = process.env.PORT       //get port from heroku or use 3001
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`Server running on port ${PORT}`)
 })

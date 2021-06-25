@@ -7,6 +7,8 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "build:ui": "rm -rf build && cd ../FSO-Note-reactfrontend/ && npm run build --prod && cp -r build ../FSO-Note-nodebackend",
     "deploy": "git push heroku main",
     "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push && npm run deploy",
@@ -28,6 +30,7 @@
     "node": "v14.15.2"
   },
   "devDependencies": {
+    "eslint": "^7.29.0",
     "nodemon": "^2.0.7"
   }
 }
