@@ -6,7 +6,7 @@ Lessons Taught:\
 -Request testing\
 -Middleware and Error handlers\
 -Heroku deployment\
--Validation and Linting\
+-Validation and Linting
 
 ReactJS\
 -Modern Hooks, Effect Hooks
