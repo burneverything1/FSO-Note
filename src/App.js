@@ -15,12 +15,21 @@ const App = (props) => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
-  useEffect(() => {
+  useEffect(() => {   // hook to load notes from database
     noteService
       .getAll()
       .then(initialNotes => {
         setNotes(initialNotes)
       })
+  }, [])
+
+  useEffect(() => {   // on page load, if user is logged in, store login where needed
+    const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      setUser(user)
+      noteService.setToken(user.token)
+    }
   }, [])
 
   const handleNoteChange = (event) => {
@@ -84,6 +93,13 @@ const App = (props) => {
       const user = await loginService.login({
         username, password,
       })
+
+      // save token to browser local storage
+      window.localStorage.setItem(
+        'loggedNoteappUser', JSON.stringify(user)
+      )
+
+      noteService.setToken(user.token)      // sets the user token for when they try to create notes
       setUser(user)
       setUsername('')
       setPassword('')
