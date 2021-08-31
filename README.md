@@ -1,7 +1,7 @@
 This project is a learning project meant to explore Modern Web Development through NodeJS, Express, ReactJS, MongoDB (MERN Stack). This project was taught as the classwork of https://fullstackopen.com/en/.
 
 Lessons Taught:\
--Unit and Integration Tests
+-Unit and Integration Tests\
 -Clean Code practices, Project Organization, and Modularization\
 -utilizing package.json's scripts and devdependencies\
 -Request testing\
