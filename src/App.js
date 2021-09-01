@@ -1,21 +1,23 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Note from './components/Note'
 import Notification from './components/Notification'
 import Footer from './components/Footer'
 
 import noteService from './services/notes'
 import loginService from './services/login'
+import LoginForm from './components/LoginForm'
+import Togglable from './components/Togglable'
+import NoteForm from './components/NoteForm'
 
-const App = (props) => {
+const App = () => {
   const [notes, setNotes] = useState([])
-  const [newNote, setNewNote] = useState('')        //a state for storing user-submitted input
   const [showAll, setShowAll] = useState(true)
   const [errorMessage, setErrorMessage] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
-  useEffect(() => {   // hook to load notes from database
+  useEffect(() => {
     noteService
       .getAll()
       .then(initialNotes => {
@@ -32,35 +34,20 @@ const App = (props) => {
     }
   }, [])
 
-  const handleNoteChange = (event) => {
-    setNewNote(event.target.value)
-  }
-  /* the HTML input element needs an onChange handler to allow the user to
-  change the element. Only setting value=newNote state causes the App component
-  to take control of the element, preventing input. */
-
   const notesToShow = showAll
     ? notes
     : notes.filter(note => note.important === true)
   /* a ternary operator that changes notesToShow depending on whether showAll is T/F.
   Using notesToShow allows for conditional filtering of displayed note elements. */
 
-  const addNote = (event) => {
-    event.preventDefault()
-    const noteObject = {
-      content: newNote,
-      date: new Date().toISOString(),
-      important: Math.random() < 0.5
-    }
-
-    //send created note in POST request
+  const addNote = (noteObject) => {
+    noteFormRef.current.toggleVisibility()    // toggle noteForm's visibility func
     noteService
       .create(noteObject)
       .then(returnedNote => {
         /* the newnote returned by backend server is added to the list of notes
         in the application state to trigger a browser re-render */
         setNotes(notes.concat(returnedNote))
-        setNewNote('')
       })
   }
 
@@ -112,37 +99,23 @@ const App = (props) => {
   }
 
   const loginForm = () => (
-    <form onSubmit={handleLogin}>
-      <div>
-        username
-          <input
-          type='text'
-          value={username}
-          name='Username'
-          onChange={({ target }) => setUsername(target.value)}
-        />
-      </div>
-      <div>
-        password
-          <input
-          type='password'
-          value={password}
-          name='Password'
-          onChange={({ target }) => setPassword(target.value)}
-        />
-      </div>
-      <button type='submit'>login</button>
-    </form>
+    <Togglable buttonLabel='login'>
+      <LoginForm
+        username={username}
+        password={password}
+        handleUsernameChange={({ target }) => setUsername(target.value)}
+        handlePasswordChange={({ target }) => setPassword(target.value)}
+        handleSubmit={handleLogin}
+      />
+    </Togglable>
   )
 
+  const noteFormRef = useRef()    // reference to this component, hook ensures ref keeps through re-renders
+
   const noteForm = () => (
-    <form onSubmit={addNote}>
-    <input 
-      value={newNote}
-      onChange={handleNoteChange}   //called every time a change occurs in input element
-    />
-    <button type="submit">save</button>
-  </form>
+    <Togglable buttonLabel='new note' ref={noteFormRef}>
+      <NoteForm createNote={addNote}/>
+    </Togglable>
   )
 
   return (
