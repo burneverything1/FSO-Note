@@ -1,4 +1,4 @@
-import axios from '../util/axios_config'
+import axios from 'axios'
 const baseUrl = '/api/login'
 
 const login = async credentials => {
