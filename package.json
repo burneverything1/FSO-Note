@@ -1,0 +1,44 @@
+{
+  "name": "nodebackend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "NODE_ENV=production node index.js",
+    "dev": "NODE_ENV=development nodemon index.js",
+    "test": "NODE_ENV=test jest --verbose --runInBand",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "build:ui": "rm -rf build && cd ../FSO-Note-reactfrontend/ && npm run build --prod && cp -r build ../FSO-Note-nodebackend",
+    "deploy": "git push heroku main",
+    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push && npm run deploy",
+    "logs:prod": "heroku logs --tail"
+  },
+  "author": "Tim Yehan Lee",
+  "license": "ISC",
+  "dependencies": {
+    "@heroku/buildpack-registry": "^1.0.1",
+    "bcrypt": "^5.0.1",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "heroku": "^7.53.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.12.10",
+    "mongoose-unique-validator": "^2.0.3",
+    "morgan": "^1.10.0",
+    "node": "^16.1.0"
+  },
+  "engines": {
+    "node": "v14.15.2"
+  },
+  "devDependencies": {
+    "eslint": "^7.29.0",
+    "jest": "^27.1.0",
+    "nodemon": "^2.0.7",
+    "supertest": "^6.1.6"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  }
+}

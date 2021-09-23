@@ -1,0 +1,9 @@
+POST http://localhost:3001/api/notes
+Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RlciIsImlkIjoiNjEyZDNjZmFlMDE1Y2M4ZWIwNzhkYWNhIiwiaWF0IjoxNjMwMzU5MTAwfQ.gBRbSEjYnc1R-Yp7GVJDyF6M05163Ten4Qi1YDYwTlA
+
+{
+    "content": "loltest",
+    "important": false,
+    "userId": "612d3cfae015cc8eb078daca"
+}
